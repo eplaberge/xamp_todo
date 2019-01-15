@@ -17,6 +17,9 @@ if (isset($_POST['add'])){
     $sql_query = "insert into items (id,item) values (NULL, '".$item_name."')";
     $sql_statement = mysqli_prepare($connection,$sql_query);
     $sql_statement->execute();
+    $sql_query = "insert into timestamps (id) values (last_insert_id())";
+    $sql_statement = mysqli_prepare($connection,$sql_query);
+    $sql_statement->execute();
 //    $_POST['add'] = NULL;
 //    echo "<br>task added!";
 //
@@ -36,6 +39,7 @@ if(isset($_POST['delete'])){
     }
 </script>
 <head>
+    <title>XAMPP ToDo Project::View</title>
 <h3>TODO LIST</h3>
 </head>
 <body>
@@ -43,16 +47,17 @@ if(isset($_POST['delete'])){
     <tr>
         <th id="id">id</th>
         <th id="item">item</th>
+        <th id="timestamp">timestamp</th>
     </tr>
     <?php
         $connection = db_open();
-        $sql_query = "select * from items";
+        $sql_query = "SELECT items.id, items.item, timestamps.timestamp FROM items INNER JOIN timestamps on items.id = timestamps.id;";
         $query_result = mysqli_query($connection,$sql_query);
         if(mysqli_num_rows($query_result)){
             while($rows=mysqli_fetch_assoc($query_result)){
-                echo "<tr>";
-                echo "<td>". $rows['id'] . "</td>";
+                echo "<tr><td>". $rows['id'] . "</td>";
                 echo "<td>". $rows['item']."</td>";
+                echo "<td>". $rows['timestamp']."</td>";
             }
         }
         db_close($connection);
